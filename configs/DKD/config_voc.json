@@ -1,0 +1,124 @@
+{
+    "name": "DKD",
+    "dataset": "voc",
+    "basemodel_dir": "None",
+    
+    "n_gpu": 1,
+    "multiprocessing_distributed": false,
+    "rank": 0,
+    "world_size": 1,
+    "dist_backend": "nccl",
+    "dist_url": "tcp://127.0.0.1:12346",
+    "seed": 1,
+    "use_amp": true,
+    "arch": {
+        "type": "DeepLabV3",
+        "args": {
+            "output_stride": 16,
+            "norm_act": "bn_sync",
+            "backbone_pretrained": true,
+            "freeze_all_bn": false
+        }
+    },
+    "data_loader": {
+        "type": "IncrementalDataLoader",
+        "args": {
+            "task": {
+                "name": "15-1",
+                "step": 0,
+                "setting": "overlap",
+                "idxs_path": "./data/"
+            },
+            "train": {
+                "args": {
+                    "transform": true,
+                    "transform_args": {
+                        "crop_size": 512
+                    },
+                    "masking_value": 0
+                },
+                "batch_size": 32
+            },
+            "val": {
+                "cross_val": false,
+                "args": {
+                    "transform": true,
+                    "transform_args": {
+                        "crop_size": 512
+                    },
+                    "masking_value": 0
+                },
+                "batch_size": 1
+            },
+            "test": {
+                "args": {
+                    "transform": true,
+                    "transform_args": {
+                        "crop_size": 512
+                    },
+                    "masking_value": 0
+                },
+                "batch_size": 1
+            },
+            "num_workers": 4,
+            "pin_memory": true,
+            "memory": {
+                "mem_size": 0, 
+                "sampling": {
+                    "sam_method": "img_bal",
+                    "sam_balanced_strategy": "uniform"
+                },
+                "retrieval": {
+                    "ret_method": "random",
+                    "ret_mode": "none"
+                },
+                "mem_dir": "./"
+            }
+        }
+    },
+    "optimizer": {
+        "type": "SGD",
+        "args": {
+            "lr": 1e-3,
+            "weight_decay": 1e-4,
+            "momentum": 0.9,
+            "nesterov": true
+        }
+    },
+    "hyperparameter": {
+        "pseudo_labeling": "None",
+        "pos_weight": 1,
+        "mbce": 1,
+        "kd": 5,
+        "dkd_pos": 5,
+        "dkd_neg": 5,
+        "ac": 1,
+        "cur_fid": 1,
+        "mem_fid": 1,
+        "scale": 1
+    },
+    "lr_scheduler": {
+        "type": "PolyLR",
+        "args": {}
+    },
+    "evaluator": {
+        "type": "Evaluator",
+        "args": {}
+    },
+    "metrics": [
+        "Mean_Intersection_over_Union",
+        "Confusion_matrix"
+    ],
+    "trainer": {
+        "epochs": 60,
+        "save_dir": "saved_voc/",
+        "save_period": -1,
+        "validation_period": -1,
+        "verbosity": 2,
+        "monitor": "off",
+        "early_stop": -1,
+        "reset_best_mnt": false,
+        "tensorboard": false,
+        "pseudo_val_period": false
+    }
+}
