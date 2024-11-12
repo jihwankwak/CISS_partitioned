@@ -325,7 +325,7 @@ class Trainer_incremental(Trainer_base):
             self.logger.info(f"Current batch length : {len(self.train_loader)} | Memory batch length : {len(self.mem_loader)}")
             
     def _print_train_info(self):
-        self.logger.info(f"Total loss = L_unce + {self.config['hyperparameter']['unkd']} * L_unkd + {self.config['hyperparameter']['unmem']} * L_unmem")
+        self.logger.info(f"Total loss = 0.5 * L_unce + 0.5 * L_unmem + {self.config['hyperparameter']['unkd']} * L_unkd ")
 
     def _train_epoch(self, epoch):
         """
